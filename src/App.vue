@@ -1,32 +1,26 @@
 <template>
-  <section>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </section>
+  <MultistepFormApp></MultistepFormApp>
 </template>
 
 <script lang="ts">
+import MultistepFormApp from "./modules/multistep-form/MultistepForm.vue";
+
 export default {
-  components: {},
-  data: () => ({}),
+  components: {
+    MultistepFormApp
+  },
+  data: () => ({})
 };
 </script>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+<style>
+@font-face {
+  font-family: "IbmPlexSansRegular";
+  src: url(./fonts/IBMPlexSans-Regular.ttf) format("truetype");
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+@font-face {
+  font-family: "IbmPlexSansBold";
+  src: url(./fonts/IBMPlexSans-Bold.ttf) format("truetype");
 }
 </style>
