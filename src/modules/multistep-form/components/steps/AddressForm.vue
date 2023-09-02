@@ -1,28 +1,34 @@
 <template>
   <div v-if="currentStep === componentStep">
-    <div class="form-item">
-      <label class="form-label">CEP</label>
-      <input class="input" type="text" v-model="addressFormData.cep" placeholder="CEP">
+    <div class="form-row">
+      <div class="form-item">
+        <label class="form-label">CEP</label>
+        <input class="input" type="text" v-model="addressFormData.cep" placeholder="CEP" @blur="fetchAddress">
+      </div>
+      <div class="form-item">
+        <label class="form-label">Número</label>
+        <input class="input" type="text" v-model="addressFormData.number" placeholder="Número">
+      </div>
     </div>
-    <div class="form-item">
-      <label class="form-label">Número</label>
-      <input class="input" type="text" v-model="addressFormData.number" placeholder="Número">
+    <div class="form-row">
+      <div class="form-item">
+        <label class="form-label">Rua</label>
+        <input class="input" type="text" v-model="addressFormData.street" disabled>
+      </div>
+      <div class="form-item">
+        <label class="form-label">Bairro</label>
+        <input class="input" type="text" v-model="addressFormData.neighborhood" disabled>
+      </div>
     </div>
-    <div class="form-item">
-      <label class="form-label">Rua</label>
-      <input class="input" type="text" v-model="addressFormData.street" placeholder="Rua">
-    </div>
-    <div class="form-item">
-      <label class="form-label">Bairro</label>
-      <input class="input" type="text" v-model="addressFormData.neighborhood" placeholder="Bairro">
-    </div>
-    <div class="form-item">
-      <label class="form-label">Cidade</label>
-      <input class="input" type="text" v-model="addressFormData.city" placeholder="Cidade">
-    </div>
-    <div class="form-item">
-      <label class="form-label">Estado</label>
-      <input class="input" type="text" v-model="addressFormData.state" placeholder="Estado">
+    <div class="form-row">
+      <div class="form-item">
+        <label class="form-label">Cidade</label>
+        <input class="input" type="text" v-model="addressFormData.city" disabled>
+      </div>
+      <div class="form-item">
+        <label class="form-label">Estado</label>
+        <input class="input" type="text" v-model="addressFormData.state" disabled>
+      </div>
     </div>
     <div class="buttons">
       <button class="button-previous" @click="prevStep">Voltar</button>
@@ -35,6 +41,8 @@
 import { Address } from '../../entities/Address.entity';
 import { UserData } from '../../entities/UserData.entity';
 import FormStep from '../../enums/FormStep';
+import { ViaCepResponse } from '../../service/domain/ViaCepResponse';
+import ViaCepService from '../../service/via-cep.service';
 
 export default {
   props: {
@@ -58,7 +66,22 @@ export default {
     },
     nextStep() {
       this.$emit('next', this.addressFormData);
-    }
+    },
+    async fetchAddress() {
+      ViaCepService.getAddressByCep(this.addressFormData.cep).then((response: ViaCepResponse) => {
+        this.addressFormData.city = response.data.localidade;
+        this.addressFormData.neighborhood = response.data.bairro;
+        this.addressFormData.state = response.data.uf;
+        this.addressFormData.street = response.data.logradouro;
+      }).catch((error) => {
+        alert('CEP não encontrado');
+        this.addressFormData.city = '';
+        this.addressFormData.neighborhood = '';
+        this.addressFormData.state = '';
+        this.addressFormData.street = '';
+        console.log(error);
+      });
+    },
   },
   mounted() {
     Object.assign(this.addressFormData, this.userData.address);
@@ -68,6 +91,13 @@ export default {
 </script>
   
 <style scoped>
+.form-row {
+  display: inline-flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 20px;
+}
+
 .form-item {
   width: 100%;
   height: 100%;
@@ -75,7 +105,7 @@ export default {
   justify-content: flex-start;
   align-items: flex-start;
   gap: 4px;
-  display: inline-flex;
+  display: flex;
   padding-bottom: 16px;
 }
 
@@ -102,6 +132,10 @@ export default {
   line-height: 24px;
   word-wrap: break-word;
   font-family: IbmPlexSansBold;
+}
+
+input:disabled {
+  background: #F5F4F6;
 }
 
 .buttons {

@@ -27,6 +27,8 @@ import { Contact } from './entities/Contact.entity';
 import { PersonalData } from './entities/PersonalData.entity';
 import { UserData } from './entities/UserData.entity';
 import FormStep from './enums/FormStep';
+import { RestTestResponse } from './service/domain/RestTestResponse';
+import RestTestService from './service/rest-test.service';
 
 export default {
   components: {
@@ -50,18 +52,23 @@ export default {
   },
   methods: {
     nextStep(formDataStep: any) {
-      console.log('next', this.userData);
       this.updateFormData(formDataStep);
       this.currentStep++;
     },
     prevStep(formDataStep: any) {
-      console.log('previous', this.userData);
       this.updateFormData(formDataStep);
       this.currentStep--;
     },
     submitForm(contactData: any) {
       this.userData.contact = contactData;
-      console.log('submit', this.userData);
+      RestTestService.sendFormData(this.userData).then((response: RestTestResponse) => {
+        alert('Formulário enviado com sucesso!');
+        alert(JSON.stringify(response.data.json, null, 2));
+        console.log(response);
+      }).catch((error) => {
+        alert('Erro ao enviar formulário');
+        console.log(error);
+      });
     },
     isActive(index: number) {
       return index === this.currentStep - 1;

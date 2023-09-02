@@ -127,4 +127,3 @@ export default {
   word-wrap: break-word;
 }
 </style>
-  ../../entities/UserData.entity
