@@ -21,10 +21,20 @@
   
 <script lang="ts">
 import { PersonalData } from '../../entities/PersonalData.entity';
+import { UserData } from '../../entities/UserData.entity';
 import FormStep from '../../enums/FormStep';
 
 export default {
-  props: ['currentStep'],
+  props: {
+    currentStep: {
+      type: Number,
+      required: true
+    },
+    userData: {
+      type: UserData,
+      required: true
+    }
+  },
   components: {},
   data: () => ({
     componentStep: FormStep.PersonalData,
@@ -43,6 +53,9 @@ export default {
     defaultDate() {
       return this.personalFormData.birthDate.toISOString().slice(0, 10);
     }
+  },
+  mounted() {
+    Object.assign(this.personalFormData, this.userData.personalData);
   },
   emits: ['next'],
 };
@@ -114,4 +127,4 @@ export default {
   word-wrap: break-word;
 }
 </style>
-  
+  ../../entities/UserData.entity

@@ -11,8 +11,8 @@
     </div>
     <div class="divider"></div>
     <form class="form-content">
-      <component :is="currentStepComponent" :currentStep="currentStep" @next="nextStep" @prev="prevStep"
-        @submit="submitForm" />
+      <component :is="currentStepComponent" :currentStep="currentStep" :userData="userData" @next="nextStep"
+        @prev="prevStep" @submit="submitForm" />
     </form>
   </div>
 </template>
@@ -25,6 +25,7 @@ import PersonalDataForm from './components/steps/PersonalDataForm.vue';
 import { Address } from './entities/Address.entity';
 import { Contact } from './entities/Contact.entity';
 import { PersonalData } from './entities/PersonalData.entity';
+import { UserData } from './entities/UserData.entity';
 import FormStep from './enums/FormStep';
 
 export default {
@@ -37,11 +38,10 @@ export default {
     currentStep: FormStep.PersonalData,
     steps: ['Dados Pessoais', 'Endereço', 'Contato'],
     stepComponents: shallowRef([PersonalDataForm, AddressForm, ContactForm]),
-    formData: {
-      personalData: PersonalData,
-      address: Address,
-      contact: Contact
-    }
+    userData: new UserData(
+      new PersonalData('', '', new Date()),
+      new Address('', '', null, '', '', ''),
+      new Contact('', null, null))
   }),
   computed: {
     currentStepComponent() {
@@ -50,24 +50,36 @@ export default {
   },
   methods: {
     nextStep(formDataStep: any) {
-      console.log(this.formData);
-      if (this.currentStep === FormStep.PersonalData) {
-        this.formData.personalData = formDataStep;
-      } else {
-        this.formData.address = formDataStep;
-      }
+      console.log('next', this.userData);
+      this.updateFormData(formDataStep);
       this.currentStep++;
     },
-    prevStep() {
-      console.log(this.formData);
+    prevStep(formDataStep: any) {
+      console.log('previous', this.userData);
+      this.updateFormData(formDataStep);
       this.currentStep--;
     },
     submitForm(contactData: any) {
-      this.formData.contact = contactData;
-      console.log(this.formData);
+      this.userData.contact = contactData;
+      console.log('submit', this.userData);
     },
     isActive(index: number) {
       return index === this.currentStep - 1;
+    },
+    updateFormData(formDataStep: any) {
+      switch (this.currentStep) {
+        case FormStep.PersonalData:
+          this.userData.personalData = formDataStep;
+          break;
+        case FormStep.Address:
+          this.userData.address = formDataStep;
+          break;
+        case FormStep.Contact:
+          this.userData.contact = formDataStep;
+          break;
+        default:
+          throw new Error('Invalid step');
+      }
     }
   }
 };

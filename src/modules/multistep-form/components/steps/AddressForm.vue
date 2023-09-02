@@ -33,10 +33,20 @@
   
 <script lang="ts">
 import { Address } from '../../entities/Address.entity';
+import { UserData } from '../../entities/UserData.entity';
 import FormStep from '../../enums/FormStep';
 
 export default {
-  props: ['currentStep'],
+  props: {
+    currentStep: {
+      type: Number,
+      required: true
+    },
+    userData: {
+      type: UserData,
+      required: true
+    }
+  },
   components: {},
   data: () => ({
     componentStep: FormStep.Address,
@@ -44,11 +54,14 @@ export default {
   }),
   methods: {
     prevStep() {
-      this.$emit('prev');
+      this.$emit('prev', this.addressFormData);
     },
     nextStep() {
       this.$emit('next', this.addressFormData);
     }
+  },
+  mounted() {
+    Object.assign(this.addressFormData, this.userData.address);
   },
   emits: ['prev', 'next'],
 };

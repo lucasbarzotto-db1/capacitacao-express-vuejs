@@ -21,10 +21,20 @@
   
 <script lang="ts">
 import { Contact } from '../../entities/Contact.entity';
+import { UserData } from '../../entities/UserData.entity';
 import FormStep from '../../enums/FormStep';
 
 export default {
-  props: ['currentStep'],
+  props: {
+    currentStep: {
+      type: Number,
+      required: true
+    },
+    userData: {
+      type: UserData,
+      required: true
+    }
+  },
   components: {},
   data: () => ({
     componentStep: FormStep.Contact,
@@ -32,12 +42,15 @@ export default {
   }),
   methods: {
     prevStep() {
-      this.$emit('prev');
+      this.$emit('prev', this.contactFormData);
     },
     submitForm(e: any) {
       e.preventDefault();
       this.$emit('submit', this.contactFormData);
     }
+  },
+  mounted() {
+    Object.assign(this.contactFormData, this.userData.contact);
   },
   emits: ['prev', 'submit'],
 };
